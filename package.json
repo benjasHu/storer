@@ -1,7 +1,8 @@
 {
   "name": "storer",
-  "title": "Storer",
   "main": "dist/storer.min.js",
+  "title": "Storer",
+  "version": "0.0.3",
   "license": "MIT",
   "devDependencies": {
     "babel-core": "^6.3.17",

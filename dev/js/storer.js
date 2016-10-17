@@ -599,6 +599,7 @@ export default class Storer extends _EventEmitter {
 				return prev
 			}
 		}, result)
+		
 
 		return this._prepareResult(result)
 	}
