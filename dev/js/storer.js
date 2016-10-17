@@ -598,8 +598,12 @@ export default class Storer extends _EventEmitter {
 			} else {
 				return prev
 			}
+<<<<<<< HEAD
 		}, result)
 		
+=======
+		}, collection)
+>>>>>>> parent of 894af95... Fix bug: Getting results as collection
 
 		return this._prepareResult(result)
 	}
