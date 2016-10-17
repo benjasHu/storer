@@ -1,13 +1,10 @@
 {
   "name": "storer",
-<<<<<<< HEAD
   "main": "dist/storer.min.js",
   "title": "Storer",
-  "version": "0.0.3",
-=======
+  "version": "0.0.4",
   "title": "Storer",
   "version": "0.0.1",
->>>>>>> parent of 894af95... Fix bug: Getting results as collection
   "license": "MIT",
   "devDependencies": {
     "babel-core": "^6.3.17",

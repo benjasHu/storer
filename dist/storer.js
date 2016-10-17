@@ -2231,7 +2231,7 @@ return /******/ (function(modules) { // webpackBootstrap
 					} else {
 						return prev;
 					}
-				}, collection);
+				}, result);
 	
 				return this._prepareResult(result);
 			}
