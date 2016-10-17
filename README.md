@@ -239,3 +239,77 @@ storage.loop(( value, key, i ) => {
 .then(store => console.log(store))
 .catch(error => console.error(error))
 ```
+
+###reset( value, type )
+Reset namespace with the value. If value is missing, reset with an empty object.
+- **value**: value to replace the namespace content
+- **type**: Storage type to reset the namespace *(local | session | undefined)* If undefined, will use actually using storage
+```js
+// reset with an empty object
+storage.reset();
+
+// reset and replace namespace with the new content
+storage.reset({ foo:'bar' });
+
+// reset and replace namespace with the new content in SessionStorage
+storage.reset({ foo:'bar' }, 'session');
+
+// listen to reset event
+storage.on('reset', store => console.log(store))
+```
+
+###clear( type )
+Remove namespace entry of storage, choosing between "local" & "session"
+- **type**: Storage type to reset the namespace *(local | session | undefined)* If undefined, will use actually using storage
+```js
+// reset with an empty object
+storage.clear();
+
+// reset and replace namespace with the new content in SessionStorage
+storage.reset({ foo:'bar' }, 'session');
+
+// listen to clear event
+storage.on('clear', store => console.log(store))
+```
+
+###all()
+Get all content of namespace
+```js
+// get all content
+storage.all();
+```
+
+###switchStore( type )
+Switch storage type choosing between "local" & "session". After execute this method, all methods will be used in the corresponding storage type.
+- **type**: Storage type to reset the namespace *(local | session)*
+```js
+// reset with an empty object
+storage.switchStore('session');
+
+// listen to clear event
+storage.on('switch', (type, store) => console.log(type, store))
+```
+
+###toSession()
+Switch storage type to SessionStorage.
+```js
+// switch to session
+storage.toSession();
+```
+
+###toLocal()
+Switch storage type to LocalStorage.
+```js
+// switch to local
+storage.toLocal();
+```
+
+###destroy()
+Destroy namespace on both Local and Session Storage. Also removes memory vars.
+```js
+// Destroy
+storage.destroy();
+
+// listen to destroy event. Will be invoked before destroy.
+storage.on('before.destroy', store => console.log(store))
+```
