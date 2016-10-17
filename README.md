@@ -98,7 +98,7 @@ Set a new at the specific key/path or fill the namespace with a value
 storer.set('foo');
 storer.set({ foo:'bar' });
 
-// Search the key and fillit with the value
+// Search the key and fill it with the value
 storer.set('foo', 'bar');
 
 // Search following the path and fill it with the value
@@ -131,3 +131,19 @@ And **finally**, you can listen to EventEmitter to wait the updating of the valu
 storage.on('set', value => console.log(value))
 ```
 
+###get( key | path )
+Get the value of a key or path
+- **key**: Search specific *key* in namespace entry and, if found it, get the *value*
+- **path**: Search following the *path* specific entry and, if found it, get the *value*
+```js
+// search by key
+storage.get('foo')
+
+// search by path
+storage.get('foo.bar[0].name')
+```
+You can pass multiple params to get multiple value in an array
+```js
+// multiple keys/paths
+storage.get('foo', 'xxx', 'foo.bar[0].name', 'bar') // Array of four values
+```
