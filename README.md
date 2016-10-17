@@ -1,10 +1,10 @@
 # Storer
 
-[![npm version](https://badge.fury.io/js/storer.svg)](https://badge.fury.io/js/storer)
+[![NPM version](https://badge.fury.io/js/storer.svg)](https://badge.fury.io/js/storer)
 
-**Storer** is a storage library that extendes functionality of LocalStorage and SessionStorage. It is completly written in [ECMAScript 6](http://es6-features.org/) and ready to use in current Javascript language, so you can use in both ways.
+**Storer** is a storage library that extendes functionality of LocalStorage and SessionStorage. It is completly written in [ECMAScript 6](http://es6-features.org/) and ready to use in current Javascript language (UMD), so you can use in both ways.
 
-**Setter** methods are prepared for listen to ***function callbacks***, ***Promises*** and, if you want to include it, ***EventEmitter listeners***.
+**Setter** methods are prepared for listen to ***function callbacks***, [***Promises***](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) and, if you want to include it, [***EventEmitter listeners***](https://github.com/asyncly/EventEmitter2).
 
 Creating a new instance of Storer, automatically **will be created a new entry** in Local/Session storage using the key you choose in instance options. Every new Storer instance will be a new entry in Local/Session storage, so this **namespace** will be your root of data. Storer handles itself to manage the data inside usering Objects, Arrays, etc.
 
@@ -72,7 +72,7 @@ Storer.remove('foo');
 const storer = Storer.create('foo');
 ```
 
-###new Storer(namespace, type | { options })
+###new Storer( namespace, type | { options } )
 Arguments expected are **namespace** and **type**. You can pass it as *String options* or *Object*.
 - **namespace**: Store namespace
 - **type**: Storage type. *(local | session)*
@@ -86,3 +86,48 @@ const storer = new Storer({
   type: 'session'
 });
 ```
+
+###set( (value | key, value | path, value), callback( error | value ) )
+Set a new at the specific key/path or fill the namespace with a value
+- **value**: Any value type *(string | number | boolean | object | array)*
+- **key, value**: Search specific *key* in namespace entry and, if found it, fill it with *value*
+- **path, value**: Search following the *path* specific entry and, if found it, fill it with *value*
+- **callback**: If callback function is present, will be invoked after setting the value
+```js
+// Fill namespace with a value
+storer.set('foo');
+storer.set({ foo:'bar' });
+
+// Search the key and fillit with the value
+storer.set('foo', 'bar');
+
+// Search following the path and fill it with the value
+storer.set('foo.bar[0].anotherKey', 'newValue');
+```
+If path's value is an array, you can determine wich index to update or push the new value
+```js
+// Update the index 1 with the value
+storer.set('foo.bar[1]', 'newValue');
+
+// Push the value to the new last index
+storer.set('foo.bar[]', 'newPushedValue');
+
+// If index to insert to is higher than array length, Storer manage ir and push it correctly
+storer.set('foo.bar[25]', 'newPushedValue');
+```
+If callback function is present, will be invoked. Promise callbacks will **always** be invoked
+```js
+// callback
+storer.set('foo.bar[1]', 'newValue', value => console.log(value));
+
+// Push the value to the new last index
+storer.set('foo.bar[]', 'newPushedValue')
+  .then(value => console.log(value))
+  .catch(error => console.log(error))
+```
+And **finally**, you can listen to EventEmitter to wait the updating of the value
+```js
+// listen to
+storage.on('set', value => console.log(value))
+```
+
