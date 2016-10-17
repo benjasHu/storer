@@ -1,4 +1,4 @@
-# webstorage
-Extended functionality for LocalStorage and SessionStorage
+# Storer
+Extended storage functionality for LocalStorage and SessionStorage
 
 Readme in process...
