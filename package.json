@@ -1,6 +1,6 @@
 {
-  "name": "webstorage",
-  "title": "Seres WebStorage",
+  "name": "storer",
+  "title": "Storer",
   "version": "0.0.1",
   "license": "MIT",
   "devDependencies": {

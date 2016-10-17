@@ -1,8 +1,8 @@
 import * as utils from './utils'
-import Storage from './storage'
+import StorerBase from './storer-base'
 import EventEmitter from 'eventemitter2';
 
-if(!Storage.browserSupportsStorage())
+if(!StorerBase.browserSupportsStorage())
 	throw new Error('It seems that your browser doesn\'t support both LocalStorage & SessionStorage. Try to use a modern browser!')
 
 let storageCache = storageCache || {};
@@ -17,7 +17,7 @@ const REGEX = {
 	firstDot   : /^\./
 }
 /*!
- * WebStorage v0.0.1
+ * Storer v0.0.1
  * Manage Local & Session Storage
  *
  * Licensed GPLv3 for open source use
@@ -25,10 +25,10 @@ const REGEX = {
  * http://seresinertes.com
  * Copyright 2016 seresinertes
  */
-export default class WebStorage extends _EventEmitter {
+export default class Storer extends _EventEmitter {
 
 	/**
-	 * WebStorage constructor
+	 * Storer constructor
 	 * @param  {String|Object} args Namespace or Options
 	 * @return {this}
 	 */
@@ -66,7 +66,7 @@ export default class WebStorage extends _EventEmitter {
 		this.type = args[1] || this.options.type;
 		this.options.type = this.type;
 
-		this.store = new Storage(this.options);
+		this.store = new StorerBase(this.options);
 
 		if(utils.isUndefined(storageCache[this.namespace])) {
 			storageCache[this.namespace] = {};
@@ -88,7 +88,7 @@ export default class WebStorage extends _EventEmitter {
 		if(typeof EventEmitter !== 'undefined') {
 			super.on(...args)
 		} else {
-			console.warn(`[WebStorage::on()] To use this method, you need to import EventEmitter`)
+			console.warn(`[Storer::on()] To use this method, you need to import EventEmitter`)
 		}
 	}
 
@@ -133,7 +133,7 @@ export default class WebStorage extends _EventEmitter {
 				return this._resolve({ value:path }, callback)
 
 			} catch( e ) {
-				const error = `[WebStorage::set()] There were a problem setting the value: ${JSON.stringify(path)}`
+				const error = `[Storer::set()] There were a problem setting the value: ${JSON.stringify(path)}`
 				return this._resolve({ error }, callback)
 			}
 
@@ -198,7 +198,7 @@ export default class WebStorage extends _EventEmitter {
 			let result = { value:this.all() }
 
 			if(!found) {
-				const _error = `[WebStorage::set()] There were a problem setting the value: ${JSON.stringify(value)}`
+				const _error = `[Storer::set()] There were a problem setting the value: ${JSON.stringify(value)}`
 				result = utils.merge(result, { error:_error })
 			} else {
 				this.emit('set', value)
@@ -295,7 +295,7 @@ export default class WebStorage extends _EventEmitter {
 
 			return this._prepareResult(result)
 		} else {
-			throw new Error(`[WebStorage::keys()] Keys not found`)
+			throw new Error(`[Storer::keys()] Keys not found`)
 		}
 	}
 
@@ -317,7 +317,7 @@ export default class WebStorage extends _EventEmitter {
 					if(utils.isObject(value) || utils.isArray(value))
 						iterate(value)
 				} else {
-					return Promise.reject(`[WebStorage::loop()] There were a problem looping`)
+					return Promise.reject(`[Storer::loop()] There were a problem looping`)
 				}
 			})
 		}
@@ -329,7 +329,7 @@ export default class WebStorage extends _EventEmitter {
 
 			return Promise.resolve(this.cache)
 		} else {
-			return Promise.reject(`[WebStorage::loop()] There were a problem looping`)
+			return Promise.reject(`[Storer::loop()] There were a problem looping`)
 		}
 	}
 
@@ -396,7 +396,7 @@ export default class WebStorage extends _EventEmitter {
 		let result = { value:this.all() }
 
 		if(!found) {
-			const _error = `[WebStorage::remove()] There were a problem removing the path: "${arg}"`
+			const _error = `[Storer::remove()] There were a problem removing the path: "${arg}"`
 			result = utils.merge(result, { error:_error })
 		} else {
 			this.emit('remove', arg, this.all())
@@ -542,7 +542,7 @@ export default class WebStorage extends _EventEmitter {
 
 		if(args.length > 2) {
 			if(typeof args[2] !== 'function')
-				throw new Error(`[WebStorage::set()] Only 2 params are allowed at the most`)
+				throw new Error(`[Storer::set()] Only 2 params are allowed at the most`)
 		}
 	}
 
@@ -588,7 +588,7 @@ export default class WebStorage extends _EventEmitter {
 		const collection = this._toCollection()
 
 		if(!collection.length)
-			throw new Error(`[WebStorage] Store is empty`)
+			throw new Error(`[Storer] Store is empty`)
 
 		result = collection.reduce((prev, curr) => {
 			const key = Object.keys(curr)[0]
@@ -683,27 +683,27 @@ export default class WebStorage extends _EventEmitter {
 	/*==================================*/
 	/* STATIC METHODS */
 	/**
-	 * This methods can be invoked without creating a new instance of WebStorage
+	 * This methods can be invoked without creating a new instance of Storer
 	 *
-	 * WebStorage.set(...args)
-	 * WebStorage.remove(...args)
+	 * Storer.set(...args)
+	 * Storer.remove(...args)
 	 */
 	/*==================================*/
 	static set( ...args ) {
 		const [ key, value ] = args
-		const storage = new WebStorage(key)
+		const storage = new Storer(key)
 		storage.set(value)
 	}
 
 	static remove( ...args ) {
-		const storage = new WebStorage(args[0])
+		const storage = new Storer(args[0])
 		args.shift()
 		storage.remove(args)
 	}
 
 	static create( ...args ) {
-		return new WebStorage(...args)
+		return new Storer(...args)
 	}
 }
 
-window.WebStorage = window.WebStorage || WebStorage
+window.Storer = window.Storer || Storer

@@ -1,6 +1,6 @@
 import * as utils from './utils'
 
-export default class Storage {
+export default class StorerBase {
 
 	constructor( { type='local', namespace='storage' } = {} ) {
 		this.type = type;
