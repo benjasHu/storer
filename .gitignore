@@ -4,6 +4,7 @@
 .directory
 public
 private
+npm-debug.log
 storer.js.map
 Desktop.ini
 node_modules
