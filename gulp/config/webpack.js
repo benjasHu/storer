@@ -24,13 +24,13 @@ export default function() {
 		context: devJS,
 		cache: true,
 		entry: {
-			main: [ './webstorage.js' ]
+			main: [ './storer.js' ]
 		},
 
 		output: {
 			filename: `${filename}.js`,
 			path: distJS,
-			library: 'webstorage',
+			library: 'storer',
 			libraryTarget: 'umd',
 			umdNamedDefine: true
 		},
@@ -80,7 +80,7 @@ export default function() {
 		/*__defaults.output = {
 			filename: `${filename}.js`,
 			path: distJS,
-			library: 'webstorage',
+			library: 'storer',
 			libraryTarget: 'umd',
 			umdNamedDefine: true
 		}*/

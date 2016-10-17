@@ -2,11 +2,11 @@
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
 	else if(typeof define === 'function' && define.amd)
-		define("webstorage", [], factory);
+		define("storer", [], factory);
 	else if(typeof exports === 'object')
-		exports["webstorage"] = factory();
+		exports["storer"] = factory();
 	else
-		root["webstorage"] = factory();
+		root["storer"] = factory();
 })(this, function() {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
@@ -1494,9 +1494,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var utils = _interopRequireWildcard(_utils);
 	
-	var _storage = __webpack_require__(62);
+	var _storerBase = __webpack_require__(62);
 	
-	var _storage2 = _interopRequireDefault(_storage);
+	var _storerBase2 = _interopRequireDefault(_storerBase);
 	
 	var _eventemitter = __webpack_require__(121);
 	
@@ -1506,7 +1506,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	if (!_storage2.default.browserSupportsStorage()) throw new Error('It seems that your browser doesn\'t support both LocalStorage & SessionStorage. Try to use a modern browser!');
+	if (!_storerBase2.default.browserSupportsStorage()) throw new Error('It seems that your browser doesn\'t support both LocalStorage & SessionStorage. Try to use a modern browser!');
 	
 	var storageCache = storageCache || {};
 	
@@ -1524,7 +1524,7 @@ return /******/ (function(modules) { // webpackBootstrap
 		firstDot: /^\./
 	};
 	/*!
-	 * WebStorage v0.0.1
+	 * Storer v0.0.1
 	 * Manage Local & Session Storage
 	 *
 	 * Licensed GPLv3 for open source use
@@ -1533,26 +1533,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * Copyright 2016 seresinertes
 	 */
 	
-	var WebStorage = function (_EventEmitter2) {
-		(0, _inherits3.default)(WebStorage, _EventEmitter2);
+	var Storer = function (_EventEmitter2) {
+		(0, _inherits3.default)(Storer, _EventEmitter2);
 	
 		/**
-	  * WebStorage constructor
+	  * Storer constructor
 	  * @param  {String|Object} args Namespace or Options
 	  * @return {this}
 	  */
-		function WebStorage() {
+		function Storer() {
 			var _ref;
 	
 			var _ret;
 	
-			(0, _classCallCheck3.default)(this, WebStorage);
+			(0, _classCallCheck3.default)(this, Storer);
 	
 			for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
 				args[_key] = arguments[_key];
 			}
 	
-			var _this = (0, _possibleConstructorReturn3.default)(this, (_ref = WebStorage.__proto__ || (0, _getPrototypeOf2.default)(WebStorage)).call.apply(_ref, [this].concat(args)));
+			var _this = (0, _possibleConstructorReturn3.default)(this, (_ref = Storer.__proto__ || (0, _getPrototypeOf2.default)(Storer)).call.apply(_ref, [this].concat(args)));
 	
 			_this._create.apply(_this, args);
 			return _ret = _this, (0, _possibleConstructorReturn3.default)(_this, _ret);
@@ -1565,7 +1565,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  */
 	
 	
-		(0, _createClass3.default)(WebStorage, [{
+		(0, _createClass3.default)(Storer, [{
 			key: '_create',
 			value: function _create() {
 	
@@ -1588,7 +1588,7 @@ return /******/ (function(modules) { // webpackBootstrap
 				this.type = (arguments.length <= 1 ? undefined : arguments[1]) || this.options.type;
 				this.options.type = this.type;
 	
-				this.store = new _storage2.default(this.options);
+				this.store = new _storerBase2.default(this.options);
 	
 				if (utils.isUndefined(storageCache[this.namespace])) {
 					storageCache[this.namespace] = {};
@@ -1617,9 +1617,9 @@ return /******/ (function(modules) { // webpackBootstrap
 						args[_key2] = arguments[_key2];
 					}
 	
-					(_get2 = (0, _get5.default)(WebStorage.prototype.__proto__ || (0, _getPrototypeOf2.default)(WebStorage.prototype), 'on', this)).call.apply(_get2, [this].concat(args));
+					(_get2 = (0, _get5.default)(Storer.prototype.__proto__ || (0, _getPrototypeOf2.default)(Storer.prototype), 'on', this)).call.apply(_get2, [this].concat(args));
 				} else {
-					console.warn('[WebStorage::on()] To use this method, you need to import EventEmitter');
+					console.warn('[Storer::on()] To use this method, you need to import EventEmitter');
 				}
 			}
 	
@@ -1638,7 +1638,7 @@ return /******/ (function(modules) { // webpackBootstrap
 					args[_key3] = arguments[_key3];
 				}
 	
-				if (typeof _eventemitter2.default !== 'undefined') (_get3 = (0, _get5.default)(WebStorage.prototype.__proto__ || (0, _getPrototypeOf2.default)(WebStorage.prototype), 'emit', this)).call.apply(_get3, [this].concat(args));
+				if (typeof _eventemitter2.default !== 'undefined') (_get3 = (0, _get5.default)(Storer.prototype.__proto__ || (0, _getPrototypeOf2.default)(Storer.prototype), 'emit', this)).call.apply(_get3, [this].concat(args));
 			}
 	
 			/**
@@ -1676,7 +1676,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 						return this._resolve({ value: path }, callback);
 					} catch (e) {
-						var error = '[WebStorage::set()] There were a problem setting the value: ' + (0, _stringify2.default)(path);
+						var error = '[Storer::set()] There were a problem setting the value: ' + (0, _stringify2.default)(path);
 						return this._resolve({ error: error }, callback);
 					}
 				} else {
@@ -1741,7 +1741,7 @@ return /******/ (function(modules) { // webpackBootstrap
 					var result = { value: this.all() };
 	
 					if (!found) {
-						var _error = '[WebStorage::set()] There were a problem setting the value: ' + (0, _stringify2.default)(value);
+						var _error = '[Storer::set()] There were a problem setting the value: ' + (0, _stringify2.default)(value);
 						result = utils.merge(result, { error: _error });
 					} else {
 						this.emit('set', value);
@@ -1870,7 +1870,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 					return this._prepareResult(result);
 				} else {
-					throw new Error('[WebStorage::keys()] Keys not found');
+					throw new Error('[Storer::keys()] Keys not found');
 				}
 			}
 	
@@ -1896,7 +1896,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 							if (utils.isObject(value) || utils.isArray(value)) iterate(value);
 						} else {
-							return _promise2.default.reject('[WebStorage::loop()] There were a problem looping');
+							return _promise2.default.reject('[Storer::loop()] There were a problem looping');
 						}
 					});
 				}
@@ -1908,7 +1908,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 					return _promise2.default.resolve(this.cache);
 				} else {
-					return _promise2.default.reject('[WebStorage::loop()] There were a problem looping');
+					return _promise2.default.reject('[Storer::loop()] There were a problem looping');
 				}
 			}
 	
@@ -1985,7 +1985,7 @@ return /******/ (function(modules) { // webpackBootstrap
 				var result = { value: this.all() };
 	
 				if (!found) {
-					var _error = '[WebStorage::remove()] There were a problem removing the path: "' + arg + '"';
+					var _error = '[Storer::remove()] There were a problem removing the path: "' + arg + '"';
 					result = utils.merge(result, { error: _error });
 				} else {
 					this.emit('remove', arg, this.all());
@@ -2167,7 +2167,7 @@ return /******/ (function(modules) { // webpackBootstrap
 				if (arguments.length <= 3 && typeof (arguments.length <= 2 ? undefined : arguments[2]) === 'function') return arguments.length <= 2 ? undefined : arguments[2];
 	
 				if (arguments.length > 2) {
-					if (typeof (arguments.length <= 2 ? undefined : arguments[2]) !== 'function') throw new Error('[WebStorage::set()] Only 2 params are allowed at the most');
+					if (typeof (arguments.length <= 2 ? undefined : arguments[2]) !== 'function') throw new Error('[Storer::set()] Only 2 params are allowed at the most');
 				}
 			}
 	
@@ -2221,7 +2221,7 @@ return /******/ (function(modules) { // webpackBootstrap
 				var result = [];
 				var collection = this._toCollection();
 	
-				if (!collection.length) throw new Error('[WebStorage] Store is empty');
+				if (!collection.length) throw new Error('[Storer] Store is empty');
 	
 				result = collection.reduce(function (prev, curr) {
 					var key = (0, _keys2.default)(curr)[0];
@@ -2335,10 +2335,10 @@ return /******/ (function(modules) { // webpackBootstrap
 			/*==================================*/
 			/* STATIC METHODS */
 			/**
-	   * This methods can be invoked without creating a new instance of WebStorage
+	   * This methods can be invoked without creating a new instance of Storer
 	   *
-	   * WebStorage.set(...args)
-	   * WebStorage.remove(...args)
+	   * Storer.set(...args)
+	   * Storer.remove(...args)
 	   */
 			/*==================================*/
 	
@@ -2352,7 +2352,7 @@ return /******/ (function(modules) { // webpackBootstrap
 				var key = args[0];
 				var value = args[1];
 	
-				var storage = new WebStorage(key);
+				var storage = new Storer(key);
 				storage.set(value);
 			}
 		}, {
@@ -2362,7 +2362,7 @@ return /******/ (function(modules) { // webpackBootstrap
 					args[_key8] = arguments[_key8];
 				}
 	
-				var storage = new WebStorage(args[0]);
+				var storage = new Storer(args[0]);
 				args.shift();
 				storage.remove(args);
 			}
@@ -2373,16 +2373,16 @@ return /******/ (function(modules) { // webpackBootstrap
 					args[_key9] = arguments[_key9];
 				}
 	
-				return new (Function.prototype.bind.apply(WebStorage, [null].concat(args)))();
+				return new (Function.prototype.bind.apply(Storer, [null].concat(args)))();
 			}
 		}]);
-		return WebStorage;
+		return Storer;
 	}(_EventEmitter);
 	
-	exports.default = WebStorage;
+	exports.default = Storer;
 	
 	
-	window.WebStorage = window.WebStorage || WebStorage;
+	window.Storer = window.Storer || Storer;
 	module.exports = exports['default'];
 
 
@@ -2419,22 +2419,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	var Storage = function () {
-		function Storage() {
+	var StorerBase = function () {
+		function StorerBase() {
 			var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 	
 			var _ref$type = _ref.type;
 			var type = _ref$type === undefined ? 'local' : _ref$type;
 			var _ref$namespace = _ref.namespace;
 			var namespace = _ref$namespace === undefined ? 'storage' : _ref$namespace;
-			(0, _classCallCheck3.default)(this, Storage);
+			(0, _classCallCheck3.default)(this, StorerBase);
 	
 			this.type = type;
 			this.namespace = namespace;
 			this.storage = this.getStore();
 		}
 	
-		(0, _createClass3.default)(Storage, [{
+		(0, _createClass3.default)(StorerBase, [{
 			key: 'switchStore',
 			value: function switchStore() {
 				var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'local';
@@ -2528,10 +2528,10 @@ return /******/ (function(modules) { // webpackBootstrap
 				}
 			}
 		}]);
-		return Storage;
+		return StorerBase;
 	}();
 	
-	exports.default = Storage;
+	exports.default = StorerBase;
 	module.exports = exports['default'];
 
 
@@ -6317,4 +6317,4 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ ])
 });
 ;
-//# sourceMappingURL=webstorage.js.map
+//# sourceMappingURL=storer.js.map
