@@ -123,12 +123,40 @@ storer.set('foo.bar[1]', 'newValue', value => console.log(value));
 // Push the value to the new last index
 storer.set('foo.bar[]', 'newPushedValue')
   .then(value => console.log(value))
-  .catch(error => console.log(error))
+  .catch(error => console.error(error))
 ```
 And **finally**, you can listen to EventEmitter to wait the updating of the value
 ```js
 // listen to
 storage.on('set', value => console.log(value))
+```
+
+###remove( key | path, successCallback )
+Set a new at the specific key/path or fill the namespace with a value
+- **key**: Search specific *key* in namespace entry and, if found it, remove the *value*
+- **path**: Search following the *path* specific entry and, if found it, remove the *value*
+- **successCallback**: callback function invoked when it reaches the end
+```js
+// Remove by key
+storer.remove('foo');
+
+// Remove by path
+storer.remove('foo.bar[0].anotherKey');
+
+// Success callback
+storer.remove('foo.bar[0].anotherKey', store => {
+  console.log('everything went well')
+});
+
+// Success Promise
+storer.remove('foo.bar[0].anotherKey')
+  .then(store => console.log(store))
+  .catch(error => console.error(error))
+```
+Also, you can listen to EventEmitter to wait the updating of the value
+```js
+// listen to
+storage.on('remove', value => console.log(value))
 ```
 
 ###get( key | path )
@@ -146,4 +174,68 @@ You can pass multiple params to get multiple value in an array
 ```js
 // multiple keys/paths
 storage.get('foo', 'xxx', 'foo.bar[0].name', 'bar') // Array of four values
+```
+
+###pick( key | path )
+Get the key/value pair of a key or path
+- **key**: Search specific *key* in namespace entry and, if found it, get the *key/value pair*
+- **path**: Search following the *path* specific entry and, if found it, get the *key/value pair*
+```js
+// search by key
+storage.pick('foo') // { foo:'bar' }
+
+// search by path
+storage.pick('foo.bar[0].name') // { name:'bar' }
+```
+You can pass multiple params to get multiple value in an array
+```js
+// multiple keys/paths
+storage.pick('foo', 'xxx', 'foo.bar[0].name', 'bar') // Array of four key/value pairs
+```
+
+###has( key | path )
+Check if a key or path exists in namespace
+- **key**: Search specific *key* in namespace entry and, if found it, return true
+- **path**: Search following the *path* specific entry and, if found it, return true
+```js
+// search by key
+storage.has('foo') // true
+
+// search by path
+storage.pick('foo.bar[0].name') // true
+```
+You can pass multiple params to get multiple value in an array. To return true, every argument has to exist in namespace
+```js
+// multiple keys/paths
+storage.has('foo', 'xxx', 'foo.bar[0].name', 'bar');
+```
+
+###keys()
+Get all the keys in namespace. Return an array of keys.
+```js
+// get all keys
+storage.keys()
+```
+
+###loop( iteratorCallback | successCallback )
+Iterate through store returning key/value pairs
+- **iteratorCallback**: callback function of every iteration
+- **successCallback**: callback function invoked when it reaches the end
+```js
+// loop with callbacks
+storage.loop(( value, key, i ) => {
+  console.log(value, key, i);
+}, store => {
+  //everything went well
+  console.log(store);
+})
+```
+Also, you can get success moment with Promise
+```js
+// loop with callbacks
+storage.loop(( value, key, i ) => {
+  console.log(value, key, i);
+})
+.then(store => console.log(store))
+.catch(error => console.error(error))
 ```
