@@ -322,4 +322,5 @@ MIT
 ---
 
 ##TODO
+- [ ] Expiring dates
 - [ ] Fallback to cookies if Storage is not supported
