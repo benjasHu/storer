@@ -2,8 +2,34 @@
   "name": "storer",
   "main": "dist/storer.min.js",
   "title": "Storer",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "license": "MIT",
+  "author": {
+    "name": "benjasHu"
+  },
+  "description": "Extended storage functionality for LocalStorage and SessionStorage",
+  "homepage": "https://github.com/benjasHu/storer",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/benjasHu/storer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/benjasHu/storer/issues"
+  },
+  "keywords": [
+    "storer",
+    "store",
+    "storage",
+    "localstorage",
+    "sessionstorage",
+    "webstorage"
+  ],
+  "maintainers": [
+    {
+      "name": "benjasHu",
+      "email": "benjashuuu@gmail.com"
+    }
+  ],
   "devDependencies": {
     "babel-core": "^6.3.17",
     "babel-loader": "^6.2.0",

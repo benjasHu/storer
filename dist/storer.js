@@ -1,11 +1,11 @@
 /*!
- * Storer v0.0.8
+ * Storer v0.0.9
  * Extended storage functionality for LocalStorage and SessionStorage
  * 
- * Licensed GPLv3 for open source use
+ * Licensed MIT for open source use
  * 
  * http://seresinertes.com
- * Copyright 2016 Benja Osuna
+ * Copyright 2016 benjasHu
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')

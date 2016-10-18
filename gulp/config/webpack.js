@@ -20,7 +20,7 @@ export default function() {
 	const bannerPlugin = {
 		raw: false,
 		entryOnly: true,
-		banner: `Storer v${config.pack.version}\nExtended storage functionality for LocalStorage and SessionStorage\n\nLicensed GPLv3 for open source use\n\nhttp://seresinertes.com\nCopyright ${new Date().getFullYear()} Benja Osuna`
+		banner: `Storer v${config.pack.version}\nExtended storage functionality for LocalStorage and SessionStorage\n\nLicensed MIT for open source use\n\nhttp://seresinertes.com\nCopyright ${new Date().getFullYear()} benjasHu`
 	}
 	
 	let __defaults = {
