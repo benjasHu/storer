@@ -36,7 +36,6 @@
     "gulp-util": "^3.0.4",
     "gulp-watch": "^4.2.4",
     "imports-loader": "^0.6.4",
-    "lodash": "^4.16.4",
     "opn": "^3.0.2",
     "path": "^0.12.7",
     "progress-bar-webpack-plugin": "^1.3.0",
@@ -44,5 +43,8 @@
     "webpack": "^2.0.2-beta",
     "webpack-notifier": "^1.2.1"
   },
-  "dependencies": {}
+  "dependencies": {
+    "eventemitter2": "^2.1.3",
+    "lodash": "^3.9.3"
+  }
 }

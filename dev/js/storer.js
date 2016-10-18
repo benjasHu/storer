@@ -491,9 +491,7 @@ export default class Storer extends _EventEmitter {
 
 		this.emit('before.destroy', this.all())
 
-		this.clear('local')
-		this.clear('session')
-
+		this.clear()
 		delete this.store;
 		delete this.options;
 		delete this.namespace;
