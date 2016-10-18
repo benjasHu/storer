@@ -43,8 +43,5 @@
     "webpack": "^2.0.2-beta",
     "webpack-notifier": "^1.2.1"
   },
-  "dependencies": {
-    "eventemitter2": "^2.1.3",
-    "lodash": "^3.9.3"
-  }
+  "dependencies": {}
 }

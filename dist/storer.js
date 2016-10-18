@@ -2099,7 +2099,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 				this.emit('before.destroy', this.all());
 	
-				this.clear();
+				this.clear('local');
+				this.clear('session');
+	
 				delete this.store;
 				delete this.options;
 				delete this.namespace;
