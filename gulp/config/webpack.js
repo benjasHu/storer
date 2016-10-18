@@ -38,9 +38,9 @@ export default function() {
 		externals: [
 			{ eventemitter2: {
 				root      : 'EventEmitter2',
-				commonjs  : 'EventEmitter',
-				commonjs2 : 'EventEmitter',
-				amd       : 'EventEmitter'
+				commonjs  : 'eventemitter2',
+				commonjs2 : 'eventemitter2',
+				amd       : 'eventemitter2'
 			} }
 		],
 

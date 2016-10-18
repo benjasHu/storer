@@ -1,10 +1,10 @@
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(require("EventEmitter"));
+		module.exports = factory(require("eventemitter2"));
 	else if(typeof define === 'function' && define.amd)
-		define("storer", ["EventEmitter"], factory);
+		define("storer", ["eventemitter2"], factory);
 	else if(typeof exports === 'object')
-		exports["storer"] = factory(require("EventEmitter"));
+		exports["storer"] = factory(require("eventemitter2"));
 	else
 		root["storer"] = factory(root["EventEmitter2"]);
 })(this, function(__WEBPACK_EXTERNAL_MODULE_119__) {
