@@ -6,7 +6,7 @@
 
 **Setter** methods are prepared for listen to ***function callbacks***, [***Promises***](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) and, if you want to include it, [***EventEmitter2 listeners***](https://github.com/asyncly/EventEmitter2).
 
-Creating a new instance of Storer, automatically **will be created a new entry** in Local/Session storage using the key you choose in instance options. Every new Storer instance will be a new entry in Local/Session storage, so this **namespace** will be your root of data. Storer handles itself to manage the data inside usering Objects, Arrays, etc.
+Creating a new instance of Storer, automatically **will be created a new entry** in Local/Session storage using the key you choose in instance options. Every new Storer instance will be a new entry in Local/Session storage, so this **namespace** will be your root of data. Storer handles itself to manage the data inside usering Objects, Arrays, etc. Also, Storer is exposed to window in `window.Storer` ready to use in any place.
 
 ##Installation
 
@@ -313,3 +313,11 @@ storage.destroy();
 // listen to destroy event. Will be invoked before destroy.
 storage.on('before.destroy', store => console.log(store))
 ```
+
+##License
+MIT
+
+---
+
+##TODO
+- [ ] Fallback to cookies if Storage is not supported
