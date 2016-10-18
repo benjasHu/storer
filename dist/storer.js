@@ -1,3 +1,12 @@
+/*!
+ * Storer v0.0.7
+ * Extended storage functionality for LocalStorage and SessionStorage
+ * 
+ * Licensed GPLv3 for open source use
+ * 
+ * http://seresinertes.com
+ * Copyright 2016 Benja Osuna
+ */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory(require("eventemitter2"));
@@ -1512,15 +1521,6 @@ return /******/ (function(modules) { // webpackBootstrap
 		arrayPush: /\[\]$/,
 		firstDot: /^\./
 	};
-	/*!
-	 * Storer v0.0.1
-	 * Manage Local & Session Storage
-	 *
-	 * Licensed GPLv3 for open source use
-	 *
-	 * http://seresinertes.com
-	 * Copyright 2016 seresinertes
-	 */
 	
 	var Storer = function (_EventEmitter2) {
 		(0, _inherits3.default)(Storer, _EventEmitter2);

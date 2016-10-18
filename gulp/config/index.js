@@ -26,6 +26,7 @@ function getBasePath() {
 }
 
 export default {
+	pack   : pack,
 	name   : pack.name,
 	title  : pack.title,
 	root   : options.root,

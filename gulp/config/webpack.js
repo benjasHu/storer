@@ -16,6 +16,12 @@ export default function() {
 	let providePluginDefaults = {
 		Promise: 'es6-promise-promise'
 	}
+
+	const bannerPlugin = {
+		raw: false,
+		entryOnly: true,
+		banner: `Storer v${config.pack.version}\nExtended storage functionality for LocalStorage and SessionStorage\n\nLicensed GPLv3 for open source use\n\nhttp://seresinertes.com\nCopyright ${new Date().getFullYear()} Benja Osuna`
+	}
 	
 	let __defaults = {
 		debug: false,
@@ -82,6 +88,7 @@ export default function() {
 	if(env === 'development') {
 		__defaults.devtool = 'source-map';
 		__defaults.debug = true;
+		__defaults.plugins.push(new webpack.BannerPlugin(bannerPlugin))
 	}
 
 	if(env === 'distribution') {
@@ -113,7 +120,8 @@ export default function() {
 				output: {
 					comments: false
 				} 
-			})
+			}),
+			new webpack.BannerPlugin(bannerPlugin)
 		)
 	}
 

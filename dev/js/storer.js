@@ -16,15 +16,7 @@ const REGEX = {
 	arrayPush  : /\[\]$/,
 	firstDot   : /^\./
 }
-/*!
- * Storer v0.0.1
- * Manage Local & Session Storage
- *
- * Licensed GPLv3 for open source use
- *
- * http://seresinertes.com
- * Copyright 2016 seresinertes
- */
+
 export default class Storer extends _EventEmitter {
 
 	/**
