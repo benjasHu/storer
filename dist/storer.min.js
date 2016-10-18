@@ -1,5 +1,5 @@
 /*!
- * Storer v0.0.7
+ * Storer v0.0.8
  * Extended storage functionality for LocalStorage and SessionStorage
  * 
  * Licensed GPLv3 for open source use
