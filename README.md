@@ -4,7 +4,7 @@
 
 **Storer** is a storage library that extendes functionality of LocalStorage and SessionStorage. It is completly written in [ECMAScript 6](http://es6-features.org/) and ready to use in current Javascript language (UMD), so you can use in both ways.
 
-**Setter** methods are prepared for listen to ***function callbacks***, [***Promises***](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) and, if you want to include it, [***EventEmitter listeners***](https://github.com/asyncly/EventEmitter2).
+**Setter** methods are prepared for listen to ***function callbacks***, [***Promises***](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) and, if you want to include it, [***EventEmitter2 listeners***](https://github.com/asyncly/EventEmitter2).
 
 Creating a new instance of Storer, automatically **will be created a new entry** in Local/Session storage using the key you choose in instance options. Every new Storer instance will be a new entry in Local/Session storage, so this **namespace** will be your root of data. Storer handles itself to manage the data inside usering Objects, Arrays, etc.
 
