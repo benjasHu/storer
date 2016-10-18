@@ -35,6 +35,15 @@ export default function() {
 			umdNamedDefine: true
 		},
 
+		externals: [
+			{ eventemitter2: {
+				root      : 'EventEmitter2',
+				commonjs  : 'EventEmitter',
+				commonjs2 : 'EventEmitter',
+				amd       : 'EventEmitter'
+			} }
+		],
+
 		resolve: {
 			extensions: ['', '.js'],
 			modulesDirectories: [
