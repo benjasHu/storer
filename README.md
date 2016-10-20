@@ -388,7 +388,7 @@ Storage.clearExpireds('session')
 
 // Also, you can import it as a ES6 module
 import { clearExpired } from 'storer';
-Storage.clearExpireds('local')
+clearExpireds('local')
 ```
 
 --
