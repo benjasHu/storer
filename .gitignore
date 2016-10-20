@@ -9,7 +9,7 @@ Desktop.ini
 node_modules
 bower_components
 storer.js.map
-test.js
-*.php
-*.html
-config/
+/**/dev/config/
+/**/dev/main.php
+/**/dev/main.php
+/**/dev/js/test.js
