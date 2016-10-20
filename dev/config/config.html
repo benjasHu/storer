@@ -20,19 +20,19 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-mobile-web-app-title" content="<!-- @echo title -->">
 
-    <!-- @if state='development' -->
-    <script src="<!-- @echo name -->.js"></script>
-    <!-- @endif -->
-
-    <!-- @if state='distribution' -->
-    <script src="<!-- @echo minFile -->.js"></script>
-    <!-- @endif -->
-
 </head>
     
 <?php include('main.php'); ?>
 
 <!-- <script src="../node_modules/eventemitter2/lib/eventemitter2.js"></script> -->
+
+<!-- @if state='development' -->
+<script src="js/<!-- @echo name -->.js"></script>
+<!-- @endif -->
+
+<!-- @if state='distribution' -->
+<script src="js/<!-- @echo minFile -->.js"></script>
+<!-- @endif -->
 
 </body>
 </html>

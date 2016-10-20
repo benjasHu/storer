@@ -1,6 +1,6 @@
 dev/config/
 dev/main.php
-dev/main.php
+dev/home.php
 dev/js/test.js
 .DS_Store
 .public
