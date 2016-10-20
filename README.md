@@ -1,6 +1,8 @@
 # Storer
 
 [![NPM version](https://badge.fury.io/js/storer.svg)](https://badge.fury.io/js/storer)
+[![David](https://img.shields.io/david/benjashu/storer.svg)](https://www.npmjs.com/package/storer)
+[![npm](https://img.shields.io/npm/dm/storer.svg?maxAge=2592000)]()
 
 [![NPM](https://nodei.co/npm/storer.png?downloads=true&stars=true)](https://nodei.co/npm/storer/)
 
