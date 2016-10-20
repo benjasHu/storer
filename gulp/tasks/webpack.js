@@ -2,6 +2,7 @@ import gulp from 'gulp'
 import gutil from 'gulp-util'
 import logger from '../lib/compileLogger'
 import webpack from 'webpack'
+import browserSync from 'browser-sync'
 
 gulp.task('webpack', callback => {
 
@@ -10,6 +11,7 @@ gulp.task('webpack', callback => {
 	let built = false;
 	webpack(config, (err, stats) => {
 		logger(err, stats);
+		browserSync.reload();
 		// On the initial compile, let gulp know the task is done
 		if(!built) { built = true; callback() }
 	})

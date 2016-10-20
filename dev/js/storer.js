@@ -1,11 +1,11 @@
 import * as utils from './utils'
-import StorerBase from './storer-base'
+import StorerStorage from './storer-storage'
 import EventEmitter from 'eventemitter2';
 
-if(!StorerBase.browserSupportsStorage())
+if(!StorerStorage.browserSupportsStorage())
 	throw new Error('It seems that your browser doesn\'t support both LocalStorage & SessionStorage. Try to use a modern browser!')
 
-let storageCache = storageCache || {};
+window._storer_expireds_ = {}
 
 class ClassToExtend {};
 const _EventEmitter = typeof EventEmitter !== 'undefined' ? EventEmitter : ClassToExtend
@@ -14,10 +14,44 @@ const REGEX = {
 	isPath     : /[(\[\d+\])(\.)]+/,
 	arrayIndex : /(?:\[(\d+)?\])/,
 	arrayPush  : /\[\]$/,
-	firstDot   : /^\./
+	firstDot   : /^\./,
+	expiration : /^_storer_expiration_(.+)/
 }
 
-export default class Storer extends _EventEmitter {
+function clearExpireds( type='local' ) {
+	const storage = window[`${type}Storage`]
+
+	for(const key in storage) {
+
+		let item = storage[key]
+
+		if(item !== 'undefined') {
+			item = JSON.parse(item)
+			
+			if(REGEX.expiration.test(key)) {
+				
+				if(utils.isExpired(item.timestamp, item.expiration)) {
+					storage.removeItem(key)
+
+					const namespace = REGEX.expiration.exec(key)[1]
+
+					if(namespace in storage) {
+						storage.removeItem(namespace)
+
+						const ref = `_storer_expiration_${namespace}`
+
+						if(window._storer_expireds_ && ref in window._storer_expireds_) {
+							clearTimeout(window._storer_expireds_[ref])
+							delete window._storer_expireds_[ref]
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+class Storer extends _EventEmitter {
 
 	/**
 	 * Storer constructor
@@ -32,39 +66,50 @@ export default class Storer extends _EventEmitter {
 
 	/**
 	 * Create Storage's mirror cache to manage all storage
-	 * @param  {String|Object} args Namespace or Options
+	 * @param  {Object|String} args Namespace or Options
 	 * @return {this}
 	 */
-	_create( ...args ) {
+	_create( args ) {
 
 		this.options = {
+			expiration: undefined,
 			namespace: 'storage',
 			type: 'local' // local || session
 		};
 
-		if(utils.isString(args[0])) {
-			this.options.namespace = args[0];
-			this.namespace = this.options.namespace;
+		if(utils.isString(args)) {
+			this.options.namespace = args
 
-		} else if(utils.isObject(args[0])) {
-			Object.assign(this.options, args[0]);
-			this.namespace = this.options.namespace;
-			
+		} else if(utils.isObject(args)) {
+			utils.merge(this.options, args)
 		} else {
-			this.options.namespace = null;
-			this.namespace = null;
+			throw new Error(`[Storer::constructor()] There were an error setting Storer's constructor`)
 		}
 
-		this.type = args[1] || this.options.type;
-		this.options.type = this.type;
+		this.namespace = this.options.namespace
+		this.type = this.options.type
 
-		this.store = new StorerBase(this.options);
+		this.time = {
+			timestamp: new Date().getTime()
+		}
 
-		if(utils.isUndefined(storageCache[this.namespace])) {
+		if(!!this.options.expiration) {
+			this.time['expiration'] = parseInt(this.options.expiration, 10)
+
+			this.setExpired(this.time.expiration, false)
+		}
+
+		this.store = new StorerStorage(this.options);
+
+		/*if(utils.isUndefined(storageCache[this.namespace])) {
 			storageCache[this.namespace] = {};
-		}
+		}*/
 
-		this.cache = this._getCache();
+		if(this.store.has(this.namespace)) {
+			this.cache = this.store.getContent()
+		} else {
+			this.cache = {}
+		}
 
 		this.store.set(this.cache)
 
@@ -104,6 +149,7 @@ export default class Storer extends _EventEmitter {
 	 * storage.set('foo.hello[]', 'bar') // This way you can push a value into an array
 	 */
 	set( ...args ) {
+
 		let path = args[0],
 			value = args[1],
 			callback = null
@@ -263,6 +309,7 @@ export default class Storer extends _EventEmitter {
 	 * @return {boolean}
 	 */
 	has( ...args ) {
+
 		args = utils.flatten(args)
 		return args.every(arg => {
 			const found = this._isPath(arg) ? this._findByPath(arg) : this._findInCollection(arg)
@@ -298,6 +345,7 @@ export default class Storer extends _EventEmitter {
 	 * @return {Function|Promise}
 	 */
 	loop( iteratorCallback, successCallback ) {
+
 		let count = 0
 
 		function iterate( obj=this.cache ) {
@@ -435,6 +483,99 @@ export default class Storer extends _EventEmitter {
 	}
 
 	/**
+	 * Set expired time to the entry. It will be created a new reference entry to manage it.
+	 * @param {Number}  expiration
+	 * @param {Function|Promise}  callback
+	 */
+	setExpired( expiration=0, callback ) {
+
+		const _expiredNamespace = `_storer_expiration_${this.namespace}`
+		const _expiredStore = new StorerStorage({ namespace:_expiredNamespace })
+
+		if(_expiredStore.has(_expiredNamespace)) {
+
+			const content = _expiredStore.getContent()
+
+			if(content && utils.isObject(content)) {
+				this.time = utils.merge(content, { expiration })
+				_expiredStore.set(this.time)
+			} else {
+				_expiredStore.set(utils.merge(this.time, { expiration }))
+			}
+		} else {
+			_expiredStore.set(utils.merge(this.time, { expiration }))
+		}
+
+		this.time['timestamp'] = 'timestamp' in this.time ? this.time.timestamp : new Date().getTime()
+		_expiredStore.set(this.time)
+
+		if(window._storer_expireds_) {
+			window._storer_expireds_[_expiredNamespace] = setTimeout(() => {
+				this.time = { timestamp: new Date().getTime() }
+				clearExpireds(this.type)
+			}, expiration)
+		}
+
+		let result = {}
+
+		if(_expiredStore.has(_expiredNamespace)) {
+			result = { value:_expiredStore.getContent(_expiredNamespace) }
+			this.emit('set.expired', _expiredStore.getContent(_expiredNamespace))
+		} else {
+			result = { error:`[Storer::expiration] Expiration namespace not found in storage: [${_expiredNamespace}]` }
+		}
+
+		return this._resolve(result, callback)
+	}
+
+	/**
+	 * Remove expired time for the entry. ALso, will be removed the reference entry.
+	 * @return {Function|Promise} callback
+	 */
+	removeExpired( callback ) {
+		let result = {}
+		const _expiredNamespace = `_storer_expiration_${this.namespace}`
+		const _expiredStore = new StorerStorage({ namespace:_expiredNamespace })
+
+		if(_expiredStore.has(_expiredNamespace)) {
+			_expiredStore.remove(_expiredNamespace)
+
+			this.time = { timestamp: new Date().getTime() }
+			clearExpireds(this.type)
+
+			result = { value:_expiredNamespace }
+			this.emit('remove.expired', _expiredStore.getContent(_expiredNamespace))
+		} else {
+			result = { error:`[Storer::expiration] Expiration namespace not found in storage: [${_expiredNamespace}]` }
+		}
+
+		return this._resolve(result, callback)
+	}
+
+	clearExpireds( type='local' ) { clearExpireds(type) }
+
+	/**
+	 * Check if expiration time is exceeded
+	 * @return {Boolean}
+	 */
+	isExpired() {
+		const _expiredNamespace = `_storer_expiration_${this.namespace}`
+		const _expiredStore = new StorerStorage({ namespace:_expiredNamespace })
+
+		if(!_expiredStore.has(_expiredNamespace)) {
+			return true
+		}
+
+		if('expiration' in this.time) {
+			const { timestamp, expiration } = this.time
+			const now = new Date().getTime()
+			return (now - timestamp) > expiration
+		} else {
+			return false
+		}
+	}
+
+	/**
 	 * Switch store type
 	 * @param  {String} type
 	 * @return {void}
@@ -499,8 +640,7 @@ export default class Storer extends _EventEmitter {
 	 */
 	_getCache() {
 		return this.store.has(this.namespace) ?
-			utils.isObject(this.store.getContent(this.namespace)) ? this.store.getContent(this.namespace) : {} :
-			storageCache[this.namespace];
+			utils.isObject(this.store.getContent(this.namespace)) ? this.store.getContent(this.namespace) : {} : {};
 	}
 
 	/**
@@ -698,6 +838,21 @@ export default class Storer extends _EventEmitter {
 	static create( ...args ) {
 		return new Storer(...args)
 	}
+
+	static clearExpireds( type='local' ) { clearExpireds(type) }
+}
+
+// check for expired items in storage
+window.onload = () => {
+	clearExpireds('local')
+	clearExpireds('session')
+}
+
+window.onbeforeunload = () => {
+	clearExpireds('local')
+	clearExpireds('session')
 }
 
 window.Storer = window.Storer || Storer
+
+export { Storer as default, clearExpireds }

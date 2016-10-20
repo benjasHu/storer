@@ -11,7 +11,9 @@ export default function() {
 		  distJS     = path.resolve(config.dist),
 		  env        = process.env.NODE_ENV || 'development'
 
-	const filename = env === 'development' ? config.name : `${config.name}.min`
+	const filename = env === 'development' ?
+		config.name :
+		env === 'distributionDefault' ? config.name : `${config.name}.min`
 
 	let providePluginDefaults = {
 		Promise: 'es6-promise-promise'
@@ -30,7 +32,9 @@ export default function() {
 		context: devJS,
 		cache: true,
 		entry: {
-			main: [ './storer.js' ]
+			main: [
+				env === 'development' ? './test.js' : './index.js'
+			]
 		},
 
 		output: {
@@ -87,19 +91,15 @@ export default function() {
 
 	if(env === 'development') {
 		__defaults.devtool = 'source-map';
+	}
+
+	if(env === 'development' || env === 'distributionDefault') {
 		__defaults.debug = true;
 		__defaults.plugins.push(new webpack.BannerPlugin(bannerPlugin))
 	}
 
 	if(env === 'distribution') {
 		__defaults.watch = false
-		/*__defaults.output = {
-			filename: `${filename}.js`,
-			path: distJS,
-			library: 'storer',
-			libraryTarget: 'umd',
-			umdNamedDefine: true
-		}*/
 		__defaults.plugins.push(
 			new webpack.optimize.UglifyJsPlugin({
 				sourceMap: false,

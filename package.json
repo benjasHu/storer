@@ -2,7 +2,7 @@
   "name": "storer",
   "main": "dist/storer.min.js",
   "title": "Storer",
-  "version": "0.0.9",
+  "version": "0.1.0",
   "license": "MIT",
   "author": {
     "name": "benjasHu"

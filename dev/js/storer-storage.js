@@ -24,19 +24,6 @@ export default class StorerBase {
 	set( data={} ) {
 		this.storage.setItem(this.namespace, JSON.stringify(data));
 
-		/*if(utils.size(data) === 0) {
-			const toggleStore = this.toggleStore();
-
-			console.log(toggleStore)
-
-			if(toggleStore.getItem(this.namespace)) {
-				toggleStore.setItem(this.namespace, '');
-				return this.getContent()
-			} else {
-				throw new Error(`[Storage::set()] Not found ${this.namespace} in ${toggleStore}`)
-			}
-		}*/
-
 		return this.getContent()
 	}
 
@@ -68,9 +55,7 @@ export default class StorerBase {
 
 	static browserSupportsStorage() {
 		try {
-			window.localStorage.setItem('foo', 'foo');
-			window.localStorage.removeItem('foo');
-			return true;
+			return 'localStorage' in window && window['localStorage'] !== null;
 		} catch (e) {
 			return false;
 		}

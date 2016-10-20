@@ -78,6 +78,11 @@ export function merge( target, source ) {
 	})
 }*/
 
+export function isExpired( timestamp, expiration ) {
+	const now = new Date().getTime()
+	return (now - timestamp) > expiration
+}
+
 export function contains( obj, value ) {
 	return !!(~(JSON.stringify(obj)).indexOf(JSON.stringify(value)))
 }
