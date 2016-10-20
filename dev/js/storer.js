@@ -842,6 +842,7 @@ class Storer extends _EventEmitter {
 	static clearExpireds( type='local' ) { clearExpireds(type) }
 }
 
+
 // check for expired items in storage
 window.onload = () => {
 	clearExpireds('local')
