@@ -1,3 +1,7 @@
+dev/config/
+dev/main.php
+dev/main.php
+dev/js/test.js
 .DS_Store
 .public
 .publish
@@ -8,8 +12,3 @@ npm-debug.log
 Desktop.ini
 node_modules
 bower_components
-storer.js.map
-/**/dev/config/
-/**/dev/main.php
-/**/dev/main.php
-/**/dev/js/test.js
