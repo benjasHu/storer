@@ -60,6 +60,12 @@ When the value of your namespace is an object, you can access to a property by a
 - Nested entries with a **dot** `.`
 - Array entries with **brackets and its index** `[x]`
 
+##Expiration
+It's possible to add an expiration time to an Storer instance. Simply add to its options a `expiration` property an a number as value *(number in milliseconds)*. Storer will manage it internally in multiple ways, setting a timeOut for each Storer instance, and checking for expired entries in Storage on window load and beforeunload.
+
+In addition, Storer has some methods to manage this functionality like **setExpired**, **removeExpired**, **isExpired** and **clearExpireds**. Checkout the [**Expiration API**](#expiration-api).
+
+
 ##API
 ###Storer
 Storer class variable. If is used without creating a new instance, you can call **set**, **remove** and **create** methods
@@ -74,18 +80,22 @@ Storer.remove('foo');
 const storer = Storer.create('foo');
 ```
 
-###new Storer( namespace, type | { options } )
+###new Storer( namespace | { options } )
 Arguments expected are **namespace** and **type**. You can pass it as *String options* or *Object*.
 - **namespace**: Store namespace
-- **type**: Storage type. *(local | session)*
+- **options**: Object that can contain:
+  - **namespace**: Store namespace
+  - **type**: Storage type. *(local | session)*
+  - **expiration**: Time to be expired for the entry in milliseconds *(number)*
 ```js
 // options as string
-const storer = new Storer('myStore', 'local');
+const storer = new Storer('myStore');
 
 // options as object
 const storer = new Storer({
   namespace: 'foo',
-  type: 'session'
+  type: 'session',
+  expiration: 4000
 });
 ```
 
@@ -316,11 +326,77 @@ storage.destroy();
 storage.on('before.destroy', store => console.log(store))
 ```
 
+---
+
+##Expiration API
+
+###setExpired( expiration, callback )
+Set expired time to the entry. It will be created a new reference entry to manage it.
+- **expiration**: Expired number in milliseconds
+- **callback**: callback function invoked when everythings went well
+```js
+// set expired number
+storage.setExpired(8000)
+
+// set expired number with callback
+storage.setExpired(8000, (error, value) => console.log(value))
+
+// set expired number with Promise
+storage.setExpired(8000)
+  .then(value => console.log(value))
+  .catch(error => console.error(error))
+
+// set expired listener
+storage.on('set.expired', value => console.log(value))
+```
+
+###removeExpired( callback )
+Remove expired time to the entry. It will be removed a reference entry from Storage.
+- **callback**: callback function invoked when everythings went well
+```js
+// remove expired
+storage.removeExpired(8000)
+
+// remove expired with callback
+storage.removeExpired(8000, (error, value) => console.log(value))
+
+// remove expired with Promise
+storage.removeExpired(8000)
+  .then(value => console.log(value))
+  .catch(error => console.error(error))
+
+// remove expired listener
+storage.on('remove.expired', value => console.log(value))
+```
+
+###isExpired()
+Check if expiration time is exceeded
+```js
+// remove expired
+storage.isExpired() // true | false
+```
+
+###clearExpireds( type )
+Clear all expired entries from Storage.
+- **type**: Storage type *(local | session)*
+```js
+// clear expired eentries
+storage.clearExpireds('local')
+
+// This method is also a static method of Storer, so you can invoke it without creating a new instance
+Storage.clearExpireds('session')
+
+// Also, you can import it as a ES6 module
+import { clearExpired } from 'storer';
+Storage.clearExpireds('local')
+```
+
+--
+
 ##License
 MIT
 
 ---
 
 ##TODO
-- [ ] Expiring dates
 - [ ] Fallback to cookies if Storage is not supported
