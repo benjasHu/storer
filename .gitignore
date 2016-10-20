@@ -5,7 +5,11 @@
 public
 private
 npm-debug.log
-storer.js.map
 Desktop.ini
 node_modules
 bower_components
+storer.js.map
+dev/js/test.js
+dev/main.php
+dev/home.php
+dev/config
