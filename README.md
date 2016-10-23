@@ -401,4 +401,5 @@ MIT
 ---
 
 ##TODO
+- [ ] Unit testing
 - [ ] Fallback to cookies if Storage is not supported
