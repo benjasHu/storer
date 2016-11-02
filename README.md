@@ -1,6 +1,8 @@
 # Storer
 
 [![NPM version](https://badge.fury.io/js/storer.svg)](https://badge.fury.io/js/storer)
+[![David](https://img.shields.io/david/benjashu/storer.svg)](https://www.npmjs.com/package/storer)
+[![npm](https://img.shields.io/npm/dm/storer.svg?maxAge=2592000)]()
 
 [![NPM](https://nodei.co/npm/storer.png?downloads=true&stars=true)](https://nodei.co/npm/storer/)
 
@@ -8,7 +10,7 @@
 
 **Setter** methods are prepared for listen to ***function callbacks***, [***Promises***](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) and, if you want to include it, [***EventEmitter2 listeners***](https://github.com/asyncly/EventEmitter2).
 
-Creating a new instance of Storer, automatically **will be created a new entry** in Local/Session storage using the key you choose in instance options. Every new Storer instance will be a new entry in Local/Session storage, so this **namespace** will be your root of data. Storer handles itself to manage the data inside usering Objects, Arrays, etc. Also, Storer is exposed to window in `window.Storer` ready to use in any place.
+Creating a new instance of Storer, automatically **will be created a new entry** in Local/Session storage using the key you choose in instance options. Every new Storer instance will be a new entry in Local/Session storage, so this **namespace** will be your root of data. Storer handles itself to manage the data inside using Objects, Arrays, etc. Also, Storer is exposed to window in `window.Storer` ready to use in any place.
 
 ##Installation
 
@@ -399,4 +401,5 @@ MIT
 ---
 
 ##TODO
+- [ ] Unit testing *(in process)*
 - [ ] Fallback to cookies if Storage is not supported
