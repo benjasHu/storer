@@ -2,7 +2,7 @@
   "name": "storer",
   "main": "dist/storer.min.js",
   "title": "Storer",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "license": "MIT",
   "author": {
     "name": "benjasHu"
@@ -69,5 +69,8 @@
     "webpack": "^2.0.2-beta",
     "webpack-notifier": "^1.2.1"
   },
-  "dependencies": {}
+  "dependencies": {
+    "chai": "^3.5.0",
+    "eventemitter2": "^2.1.3"
+  }
 }

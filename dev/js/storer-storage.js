@@ -1,11 +1,11 @@
 import * as utils from './utils'
 
-export default class StorerBase {
+export default class StorerStorage {
 
 	constructor( { type='local', namespace='storage' } = {} ) {
 		this.type = type;
 		this.namespace = namespace;
-		this.storage = this.getStore();
+		this.storage = this.getStore(this.type);
 	}
 
 	switchStore( type='local' ) {
@@ -18,13 +18,13 @@ export default class StorerBase {
 	}
 
 	toggleStore() {
-		return this.getStore(this.type === 'local' ? 'session' : 'local');
+		const newType = this.type === 'local' ? 'session' : 'local'
+		this.type = newType
+		return this.getStore(this.type);
 	}
 
 	set( data={} ) {
 		this.storage.setItem(this.namespace, JSON.stringify(data));
-
-		return this.getContent()
 	}
 
 	get( namespace=this.namespace ) {
@@ -32,24 +32,31 @@ export default class StorerBase {
 	}
 
 	getContent( namespace=this.namespace ) {
-		const data = this.get(namespace);
-		return data ? JSON.parse(data) : undefined;
+		return this.has(namespace) ? JSON.parse(this.get(namespace)) : undefined;
 	}
 
 	has( namespace=this.namespace ) {
-		return !!this.get(namespace);
+
+		const entry = this.get(namespace)
+
+		if(utils.isNull(entry)) return false
+
+		return true
 	}
 
-	remove( namespace=this.namespace, type ) {
-		this.storage.removeItem(namespace);
+	remove( namespace=this.namespace ) {
+		this.has(namespace) && this.storage.removeItem(namespace);
 	}
 
-	removeBoth( namespace=this.namespace, type ) {
+	removeBoth( namespace=this.namespace, type=this.type ) {
+
+		if(!this.has(namespace)) return
+			
 		this.storage.removeItem(namespace);
 
 		const toggleStore = this.toggleStore();
 
-		if(toggleStore.getItem(namespace))
+		if(!utils.isNull(toggleStore.getItem(namespace)))
 			toggleStore.removeItem(namespace);
 	}
 

@@ -22,6 +22,7 @@ gulp.task('dev', cb => {
 gulp.task('dist', cb => {
 	gulpSequence(
 		'clean',
+		'test',
 		'env:dist:default',
 		'webpack:dist',
 		'env:dist',

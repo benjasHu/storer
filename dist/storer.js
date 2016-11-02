@@ -1,5 +1,5 @@
 /*!
- * Storer v0.1.0
+ * Storer v0.1.1
  * Extended storage functionality for LocalStorage and SessionStorage
  * 
  * Licensed MIT for open source use
@@ -747,22 +747,22 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var StorerBase = function () {
-		function StorerBase() {
+	var StorerStorage = function () {
+		function StorerStorage() {
 			var _ref = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
 			var _ref$type = _ref.type;
 			var type = _ref$type === undefined ? 'local' : _ref$type;
 			var _ref$namespace = _ref.namespace;
 			var namespace = _ref$namespace === undefined ? 'storage' : _ref$namespace;
-			(0, _classCallCheck3.default)(this, StorerBase);
+			(0, _classCallCheck3.default)(this, StorerStorage);
 
 			this.type = type;
 			this.namespace = namespace;
-			this.storage = this.getStore();
+			this.storage = this.getStore(this.type);
 		}
 
-		(0, _createClass3.default)(StorerBase, [{
+		(0, _createClass3.default)(StorerStorage, [{
 			key: 'switchStore',
 			value: function switchStore() {
 				var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'local';
@@ -780,7 +780,9 @@ return /******/ (function(modules) { // webpackBootstrap
 		}, {
 			key: 'toggleStore',
 			value: function toggleStore() {
-				return this.getStore(this.type === 'local' ? 'session' : 'local');
+				var newType = this.type === 'local' ? 'session' : 'local';
+				this.type = newType;
+				return this.getStore(this.type);
 			}
 		}, {
 			key: 'set',
@@ -788,8 +790,6 @@ return /******/ (function(modules) { // webpackBootstrap
 				var data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
 				this.storage.setItem(this.namespace, (0, _stringify2.default)(data));
-
-				return this.getContent();
 			}
 		}, {
 			key: 'get',
@@ -803,35 +803,41 @@ return /******/ (function(modules) { // webpackBootstrap
 			value: function getContent() {
 				var namespace = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.namespace;
 
-				var data = this.get(namespace);
-				return data ? JSON.parse(data) : undefined;
+				return this.has(namespace) ? JSON.parse(this.get(namespace)) : undefined;
 			}
 		}, {
 			key: 'has',
 			value: function has() {
 				var namespace = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.namespace;
 
-				return !!this.get(namespace);
+
+				var entry = this.get(namespace);
+
+				if (utils.isNull(entry)) return false;
+
+				return true;
 			}
 		}, {
 			key: 'remove',
 			value: function remove() {
 				var namespace = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.namespace;
-				var type = arguments[1];
 
-				this.storage.removeItem(namespace);
+				this.has(namespace) && this.storage.removeItem(namespace);
 			}
 		}, {
 			key: 'removeBoth',
 			value: function removeBoth() {
 				var namespace = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.namespace;
-				var type = arguments[1];
+				var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this.type;
+
+
+				if (!this.has(namespace)) return;
 
 				this.storage.removeItem(namespace);
 
 				var toggleStore = this.toggleStore();
 
-				if (toggleStore.getItem(namespace)) toggleStore.removeItem(namespace);
+				if (!utils.isNull(toggleStore.getItem(namespace))) toggleStore.removeItem(namespace);
 			}
 		}], [{
 			key: 'browserSupportsStorage',
@@ -843,10 +849,10 @@ return /******/ (function(modules) { // webpackBootstrap
 				}
 			}
 		}]);
-		return StorerBase;
+		return StorerStorage;
 	}();
 
-	exports.default = StorerBase;
+	exports.default = StorerStorage;
 	module.exports = exports['default'];
 
 
@@ -863,6 +869,10 @@ return /******/ (function(modules) { // webpackBootstrap
 		value: true
 	});
 
+	var _keys = __webpack_require__(41);
+
+	var _keys2 = _interopRequireDefault(_keys);
+
 	var _stringify = __webpack_require__(22);
 
 	var _stringify2 = _interopRequireDefault(_stringify);
@@ -875,10 +885,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _assign2 = _interopRequireDefault(_assign);
 
-	var _keys = __webpack_require__(41);
-
-	var _keys2 = _interopRequireDefault(_keys);
-
 	exports.size = size;
 	exports.is = is;
 	exports.isString = isString;
@@ -886,6 +892,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.isArray = isArray;
 	exports.isUndefined = isUndefined;
 	exports.isEmpty = isEmpty;
+	exports.isNull = isNull;
 	exports.isNumeric = isNumeric;
 	exports.isCollection = isCollection;
 	exports.each = each;
@@ -901,8 +908,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function size(obj) {
-		if (!is('object', obj)) return obj;
-		return (0, _keys2.default)(obj).length;
+		if (!is('object', obj)) return 0;
+		for (var prop in obj) {
+			if (obj.hasOwnProperty(prop)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	function is(type, obj) {
@@ -916,6 +928,8 @@ return /******/ (function(modules) { // webpackBootstrap
 			return typeof obj === 'undefined';
 		} else if (type.toLowerCase() === 'empty') {
 			return size(obj) === 0;
+		} else if (type.toLowerCase() === 'null') {
+			return obj === null;
 		}
 	}
 
@@ -933,6 +947,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 	function isEmpty(obj) {
 		return is('empty', obj);
+	}
+	function isNull(obj) {
+		return is('null', obj);
 	}
 	function isNumeric(obj) {
 		return !isArray(obj) && obj - parseFloat(obj) + 1 >= 0;
@@ -1017,12 +1034,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function uniq(array) {
 		if (!isArray(array)) return array;
-		var temp = [];
-		return array.filter(function (value) {
-			var test = temp.toString().indexOf(value) === -1;
-			temp.push(value);
-			return test;
+		var u = [];
+		array.forEach(function (a) {
+			if (u.indexOf(a) === -1) {
+				u.push(a);
+			}
 		});
+		return u;
 	}
 
 	function keys(obj) {
@@ -1688,9 +1706,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 		for (var key in storage) {
 
-			var item = storage[key];
+			var item = storage.getItem(key);
 
-			if (item !== 'undefined') {
+			if (typeof item !== 'undefined') {
 				item = JSON.parse(item);
 
 				if (REGEX.expiration.test(key)) {
@@ -1852,13 +1870,20 @@ return /******/ (function(modules) { // webpackBootstrap
 				var _this2 = this;
 
 				var path = arguments.length <= 0 ? undefined : arguments[0],
-				    value = arguments.length <= 1 ? undefined : arguments[1],
+				    value = !!(arguments.length <= 1 ? undefined : arguments[1]) && typeof (arguments.length <= 1 ? undefined : arguments[1]) !== 'function' ? arguments.length <= 1 ? undefined : arguments[1] : undefined,
 				    callback = null;
 
 				callback = this._parseCallback.apply(this, arguments);
 
 				if (!value) {
+
+					var error = '[Storer::set()] There were a problem setting the value: ' + (0, _stringify2.default)(path);
+
 					try {
+						if (!path) {
+							return this._resolve({ error: error }, callback);
+						}
+
 						if (utils.isObject(path)) {
 							utils.merge(this.cache, path);
 						} else {
@@ -1871,7 +1896,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 						return this._resolve({ value: path }, callback);
 					} catch (e) {
-						var error = '[Storer::set()] There were a problem setting the value: ' + (0, _stringify2.default)(path);
 						return this._resolve({ error: error }, callback);
 					}
 				} else {
@@ -2072,27 +2096,44 @@ return /******/ (function(modules) { // webpackBootstrap
 			/**
 	   * Iterate through storage
 	   * @param  {Function} iteratorCallback Each iteration function
-	   * @param  {Function} successCallback  To be executed if everything went right
+	   * @param  {Function} resultCallback  To be executed if everything went right
 	   * @return {Function|Promise}
 	   */
 
 		}, {
 			key: 'loop',
-			value: function loop(iteratorCallback, successCallback) {
+			value: function loop(iteratorCallback, resultCallback) {
 
 				var count = 0;
+
+				function showError(error) {
+					!!resultCallback && typeof resultCallback === 'function' && resultCallback.call(null, new Error(error));
+					return _promise2.default.reject(new Error(error));
+				}
+
+				var errorObjectArray = '[Storer::loop()] Storer entry have to be an object or array to be iterated';
+
+				if (!utils.isObject(this.cache) && !utils.isArray(this.cache)) {
+					return showError(errorObjectArray);
+				} else if (!this.cache || utils.isEmpty(this.cache)) {
+					return showError(errorObjectArray);
+				}
 
 				function iterate() {
 					var obj = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.cache;
 
 					utils.each(obj, function (value, key) {
-						if (!utils.isUndefined(value)) {
+						try {
+
 							iteratorCallback.call(null, value, key, count);
 							count++;
 
-							if (utils.isObject(value) || utils.isArray(value)) iterate(value);
-						} else {
-							return _promise2.default.reject('[Storer::loop()] There were a problem looping');
+							if (utils.isObject(value) || utils.isArray(value)) {
+								iterate(value);
+							}
+						} catch (e) {
+							var error = '[Storer::loop()] There were a problem looping through: ' + value;
+							return showError(error);
 						}
 					});
 				}
@@ -2100,11 +2141,12 @@ return /******/ (function(modules) { // webpackBootstrap
 				iterate(this.cache);
 
 				if (count > 0) {
-					!!successCallback && utils.isFunction(successCallback) && successCallback.call(null, this.cache);
+					!!resultCallback && typeof resultCallback === 'function' && resultCallback.call(null, count);
 
-					return _promise2.default.resolve(this.cache);
+					return _promise2.default.resolve(count);
 				} else {
-					return _promise2.default.reject('[Storer::loop()] There were a problem looping');
+					var error = '[Storer::loop()] There were a problem looping';
+					return showError(error);
 				}
 			}
 
@@ -2148,6 +2190,8 @@ return /******/ (function(modules) { // webpackBootstrap
 										delete prev[curr];
 									}
 								}
+							} else if (path[path.length - 1] === curr) {
+								delete prev[curr];
 							} else {
 								return prev[curr];
 							}
@@ -2176,13 +2220,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 				this._sanitizeArrays(this.cache);
 
-				found && this.store.set(this.cache);
+				if (found) {
+					this.store.set(this.cache);
+				}
 
 				var result = { value: this.all() };
 
 				if (!found) {
-					var _error = '[Storer::remove()] There were a problem removing the path: "' + arg + '"';
-					result = utils.merge(result, { error: _error });
+					var _error = '[Storer::remove()] There were a problem removing the path: ' + arg;
+					result = { error: _error };
 				} else {
 					this.emit('remove', arg, this.all());
 				}
@@ -2200,16 +2246,23 @@ return /******/ (function(modules) { // webpackBootstrap
 			key: 'reset',
 			value: function reset() {
 				var args = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-				var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : undefined;
+				var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this.type;
 
-				if (!this.store.has(this.namespace)) {
+
+				try {
+
+					if (type !== this.type) {
+						this.switchStore(type);
+					}
+
+					this.cache = args;
+
+					this.store.set(this.cache);
+
+					this.emit('reset', type, this.all());
+				} catch (e) {
 					throw new Error(this.namespace + ' not found in Storage');
 				}
-
-				this.cache = args;
-				this.store.set(this.cache, type);
-
-				this.emit('reset', this.all());
 
 				return this;
 			}
@@ -2223,16 +2276,25 @@ return /******/ (function(modules) { // webpackBootstrap
 		}, {
 			key: 'clear',
 			value: function clear() {
-				var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : undefined;
+				var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.type;
 
-				if (!this.store.has(this.namespace)) {
+
+				try {
+					this.cache = {};
+
+					if (type === 'both') {
+						this.store.remove(this.namespace);
+						this.switchStore(type === 'local' ? 'session' : 'local');
+						this.store.remove(this.namespace);
+					} else {
+						this.switchStore(type);
+						this.store.remove(this.namespace);
+					}
+
+					this.emit('clear', type, this.all());
+				} catch (e) {
 					throw new Error(this.namespace + ' not found in Storage');
 				}
-
-				this.cache = {};
-				this.store.remove(this.namespace, type);
-
-				this.emit('clear', this.all());
 
 				return this;
 			}
@@ -2273,9 +2335,13 @@ return /******/ (function(modules) { // webpackBootstrap
 				_expiredStore.set(this.time);
 
 				if (window._storer_expireds_) {
+
+					if (_expiredNamespace in window._storer_expireds_) return;
+
 					window._storer_expireds_[_expiredNamespace] = setTimeout(function () {
-						_this7.time = { timestamp: new Date().getTime() };
+						//this.time = { timestamp: new Date().getTime() }
 						_clearExpireds(_this7.type);
+						//this.destroy()
 					}, expiration);
 				}
 
@@ -2363,7 +2429,8 @@ return /******/ (function(modules) { // webpackBootstrap
 				var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'local';
 
 
-				if (this.type === type) type = type === 'local' ? 'session' : 'local';
+				//if(this.type === type)
+				//type = type === 'local' ? 'session' : 'local'
 
 				this.type = type;
 				this.options.type = this.type;
@@ -2420,8 +2487,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 				this.emit('before.destroy', this.all());
 
-				this.clear('local');
-				this.clear('session');
+				if (this.store.has(this.namespace)) {
+					this.clear('local');
+					this.clear('session');
+				}
 
 				delete this.store;
 				delete this.options;
@@ -2533,7 +2602,9 @@ return /******/ (function(modules) { // webpackBootstrap
 				var result = [];
 				var collection = this._toCollection();
 
-				if (!collection.length) throw new Error('[Storer] Store is empty');
+				if (!collection) return undefined;
+
+				if (!collection.length) return undefined;
 
 				result = collection.reduce(function (prev, curr) {
 					var key = (0, _keys2.default)(curr)[0];
@@ -2562,12 +2633,14 @@ return /******/ (function(modules) { // webpackBootstrap
 				var error = _ref5.error;
 
 				if (callback && typeof callback === 'function') {
-					return callback.call(null, error, value);
+					return callback.call(null, !!error ? new Error(error) : undefined, value);
 				} else {
-					if (!utils.isUndefined(error)) return _promise2.default.reject(error);
-					if (utils.isUndefined(value)) return _promise2.default.reject('The value is undefined');
 
-					return _promise2.default.resolve(value);
+					if (!!value) {
+						return _promise2.default.resolve(value);
+					} else {
+						return _promise2.default.reject(!!error ? new Error(error) : '[Storer] Something went wrong...');
+					}
 				}
 			}
 

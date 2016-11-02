@@ -23,9 +23,9 @@ function clearExpireds( type='local' ) {
 
 	for(const key in storage) {
 
-		let item = storage[key]
+		let item = storage.getItem(key)
 
-		if(item !== 'undefined') {
+		if(typeof item !== 'undefined') { 
 			item = JSON.parse(item)
 			
 			if(REGEX.expiration.test(key)) {
@@ -151,13 +151,20 @@ class Storer extends _EventEmitter {
 	set( ...args ) {
 
 		let path = args[0],
-			value = args[1],
+			value = !!args[1] && typeof args[1] !== 'function' ? args[1] : undefined,
 			callback = null
 
 		callback = this._parseCallback(...args)
 
 		if(!value) {
+
+			const error = `[Storer::set()] There were a problem setting the value: ${JSON.stringify(path)}`
+
 			try{
+				if(!path) {
+					return this._resolve({ error }, callback)
+				}
+
 				if(utils.isObject(path)) {
 					utils.merge(this.cache, path);
 				} else {
@@ -171,7 +178,6 @@ class Storer extends _EventEmitter {
 				return this._resolve({ value:path }, callback)
 
 			} catch( e ) {
-				const error = `[Storer::set()] There were a problem setting the value: ${JSON.stringify(path)}`
 				return this._resolve({ error }, callback)
 			}
 
@@ -254,6 +260,7 @@ class Storer extends _EventEmitter {
 	get( ...args ) {
 
 		args = utils.flatten(args)
+
 
 		if(!args[0].length) return this.all()
 
@@ -341,23 +348,40 @@ class Storer extends _EventEmitter {
 	/**
 	 * Iterate through storage
 	 * @param  {Function} iteratorCallback Each iteration function
-	 * @param  {Function} successCallback  To be executed if everything went right
+	 * @param  {Function} resultCallback  To be executed if everything went right
 	 * @return {Function|Promise}
 	 */
-	loop( iteratorCallback, successCallback ) {
+	loop( iteratorCallback, resultCallback ) {
 
 		let count = 0
 
+		function showError( error ) {
+			!!resultCallback && typeof resultCallback === 'function' && resultCallback.call(null, new Error(error))
+			return Promise.reject(new Error(error))
+		}
+
+		const errorObjectArray = `[Storer::loop()] Storer entry have to be an object or array to be iterated`
+
+		if(!utils.isObject(this.cache) && !utils.isArray(this.cache)) {
+			return showError(errorObjectArray)
+
+		} else if(!this.cache || utils.isEmpty(this.cache)) {
+			return showError(errorObjectArray)
+		}
+
 		function iterate( obj=this.cache ) {
 			utils.each(obj, ( value, key ) => {
-				if(!utils.isUndefined(value)) {
+				try {
+					
 					iteratorCallback.call(null, value, key, count)
 					count++
 
-					if(utils.isObject(value) || utils.isArray(value))
+					if(utils.isObject(value) || utils.isArray(value)) {
 						iterate(value)
-				} else {
-					return Promise.reject(`[Storer::loop()] There were a problem looping`)
+					}
+				} catch(e) {
+					const error = `[Storer::loop()] There were a problem looping through: ${value}`
+					return showError(error)
 				}
 			})
 		}
@@ -365,11 +389,12 @@ class Storer extends _EventEmitter {
 		iterate(this.cache)
 
 		if(count > 0) {
-			!!successCallback && utils.isFunction(successCallback) && successCallback.call(null, this.cache)
+			!!resultCallback && typeof resultCallback === 'function' && resultCallback.call(null, count)
 
-			return Promise.resolve(this.cache)
+			return Promise.resolve(count)
 		} else {
-			return Promise.reject(`[Storer::loop()] There were a problem looping`)
+			const error = `[Storer::loop()] There were a problem looping`
+			return showError(error)
 		}
 	}
 
@@ -398,12 +423,17 @@ class Storer extends _EventEmitter {
 
 						found = true
 
+
 						if(utils.isArray(prev)) {
 							prev.splice(curr, 1)
 						} else {
 							delete prev[curr]
 						}
 					}
+
+				} else if(path[path.length-1] === curr) {
+					delete prev[curr]
+
 				} else {
 					return prev[curr]
 				}
@@ -431,13 +461,15 @@ class Storer extends _EventEmitter {
 
 		this._sanitizeArrays(this.cache)
 
-		found && this.store.set(this.cache)
+		if(found) {
+			this.store.set(this.cache)
+		}
 
 		let result = { value:this.all() }
 
 		if(!found) {
-			const _error = `[Storer::remove()] There were a problem removing the path: "${arg}"`
-			result = utils.merge(result, { error:_error })
+			const _error = `[Storer::remove()] There were a problem removing the path: ${arg}`
+			result = { error:_error }
 		} else {
 			this.emit('remove', arg, this.all())
 		}
@@ -451,15 +483,22 @@ class Storer extends _EventEmitter {
 	 * @param  {String} type "local" | "session" | undefined=both
 	 * @return {void}
 	 */
-	reset( args={}, type=undefined ) {
-		if(!this.store.has(this.namespace)) {
+	reset( args={}, type=this.type ) {
+
+		try {
+			
+			if(type !== this.type) {
+				this.switchStore(type)
+			}
+
+			this.cache = args;
+
+			this.store.set(this.cache);
+
+			this.emit('reset', type, this.all())
+		} catch(e) {
 			throw new Error(`${this.namespace} not found in Storage`);
 		}
-
-		this.cache = args;
-		this.store.set(this.cache, type);
-
-		this.emit('reset', this.all())
 
 		return this;
 	}
@@ -469,15 +508,24 @@ class Storer extends _EventEmitter {
 	 * @param  {String} type "local" | "session" | undefined=both
 	 * @return {void}
 	 */
-	clear( type=undefined ) {
-		if(!this.store.has(this.namespace)) {
+	clear( type=this.type ) {
+
+		try {
+			this.cache = {};
+
+			if(type === 'both') {
+				this.store.remove(this.namespace)
+				this.switchStore(type === 'local' ? 'session' : 'local')
+				this.store.remove(this.namespace)
+			} else {
+				this.switchStore(type)
+				this.store.remove(this.namespace);
+			}
+
+			this.emit('clear', type, this.all())
+		} catch(e) {
 			throw new Error(`${this.namespace} not found in Storage`);
 		}
-
-		this.cache = {};
-		this.store.remove(this.namespace, type);
-
-		this.emit('clear', this.all())
 
 		return this;
 	}
@@ -510,9 +558,14 @@ class Storer extends _EventEmitter {
 		_expiredStore.set(this.time)
 
 		if(window._storer_expireds_) {
+
+			if(_expiredNamespace in window._storer_expireds_)
+				return
+
 			window._storer_expireds_[_expiredNamespace] = setTimeout(() => {
-				this.time = { timestamp: new Date().getTime() }
+				//this.time = { timestamp: new Date().getTime() }
 				clearExpireds(this.type)
+				//this.destroy()
 			}, expiration)
 		}
 
@@ -582,8 +635,8 @@ class Storer extends _EventEmitter {
 	 */
 	switchStore( type='local' ) {
 
-		if(this.type === type)
-			type = type === 'local' ? 'session' : 'local'
+		//if(this.type === type)
+			//type = type === 'local' ? 'session' : 'local'
 
 		this.type = type;
 		this.options.type = this.type;
@@ -624,8 +677,10 @@ class Storer extends _EventEmitter {
 
 		this.emit('before.destroy', this.all())
 
-		this.clear('local')
-		this.clear('session')
+		if(this.store.has(this.namespace)) {
+			this.clear('local')
+			this.clear('session')
+		}
 		
 		delete this.store;
 		delete this.options;
@@ -721,8 +776,9 @@ class Storer extends _EventEmitter {
 		let result = []
 		const collection = this._toCollection()
 
-		if(!collection.length)
-			throw new Error(`[Storer] Store is empty`)
+		if(!collection) return undefined
+
+		if(!collection.length) return undefined
 
 		result = collection.reduce((prev, curr) => {
 			const key = Object.keys(curr)[0]
@@ -745,12 +801,14 @@ class Storer extends _EventEmitter {
 	 */
 	_resolve( { value, error }, callback ) {
 		if(callback && typeof callback === 'function') {
-			return callback.call(null, error, value)
+			return callback.call(null, !!error ? new Error(error) : undefined, value)
 		} else {
-			if(!utils.isUndefined(error)) return Promise.reject(error)
-			if(utils.isUndefined(value)) return Promise.reject('The value is undefined')
 
-			return Promise.resolve(value)
+			if(!!value) {
+				return Promise.resolve(value)
+			} else {
+				return Promise.reject(!!error ? new Error(error) : '[Storer] Something went wrong...')
+			}
 		}
 	}
 

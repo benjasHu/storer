@@ -1,6 +1,11 @@
 export function size( obj ) {
-	if(!is('object', obj)) return obj
-	return Object.keys(obj).length
+	if(!is('object', obj)) return 0
+	for (var prop in obj) {
+		if (obj.hasOwnProperty(prop)) {
+			return false;
+		}
+	}
+	return true;
 }
 
 export function is( type, obj ) {
@@ -18,6 +23,9 @@ export function is( type, obj ) {
 
 	} else if(type.toLowerCase() === 'empty') {
 		return size(obj) === 0
+
+	} else if(type.toLowerCase() === 'null') {
+		return obj === null
 	}
 }
 
@@ -26,6 +34,7 @@ export function isObject( obj ) { return is('object', obj) }
 export function isArray( obj ) { return is('array', obj) }
 export function isUndefined( obj ) { return is('undefined', obj) }
 export function isEmpty( obj ) { return is('empty', obj) }
+export function isNull( obj ) { return is('null', obj) }
 export function isNumeric( obj ) { return !isArray( obj ) && (obj - parseFloat( obj ) + 1) >= 0; }
 
 export function isCollection( obj ) { return isArray(obj) && obj.length > 0 && obj.every(v => isObject(v)) }
@@ -103,12 +112,13 @@ export function compact( array ) {
 
 export function uniq( array ) {
 	if(!isArray(array)) return array
-	let temp = []
-	return array.filter(value => {
-		const test = temp.toString().indexOf(value) === -1
-		temp.push(value)
-		return test
-	})
+	var u = [];
+	array.forEach(function (a) {
+		if (u.indexOf(a) === -1) {
+			u.push(a);
+		}
+	});
+	return u;
 }
 
 export function keys( obj ) {
