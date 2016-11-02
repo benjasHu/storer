@@ -67,6 +67,13 @@ It's possible to add an expiration time to an Storer instance. Simply add to its
 
 In addition, Storer has some methods to manage this functionality like **setExpired**, **removeExpired**, **isExpired** and **clearExpireds**. Checkout the [**Expiration API**](#expiration-api).
 
+##Unit testing
+Storer is fully tested using Mocha and Chai.
+If you want to probe the tests just navigate to the Storer directory in node_modules and set this:
+```
+npm install
+gulp test
+```
 
 ##API
 ###Storer
