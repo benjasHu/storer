@@ -1,3 +1,6 @@
+# UNMAINTAINED!!
+I have no time to mantain and improve this package so be careful if you use it.
+
 # Storer
 
 [![NPM version](https://badge.fury.io/js/storer.svg)](https://badge.fury.io/js/storer)
